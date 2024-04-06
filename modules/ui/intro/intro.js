@@ -16,6 +16,7 @@ import { uiIntroPoint } from './point';
 import { uiIntroArea } from './area';
 import { uiIntroLine } from './line';
 import { uiIntroBuilding } from './building';
+import {uiIntroTestYourself} from './testYourself';
 import { uiIntroStartEditing } from './start_editing';
 
 
@@ -26,6 +27,7 @@ const chapterUi = {
   area: uiIntroArea,
   line: uiIntroLine,
   building: uiIntroBuilding,
+  testYourself: uiIntroTestYourself,
   startEditing: uiIntroStartEditing
 };
 
@@ -36,6 +38,7 @@ const chapterFlow = [
   'area',
   'line',
   'building',
+  'testYourself',
   'startEditing'
 ];
 
