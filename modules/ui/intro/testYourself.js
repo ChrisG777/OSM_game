@@ -25,7 +25,7 @@ export function uiIntroTestYourself(context, reveal) {
 
 
     var chapter = {
-        title: 'intro.navigation.title'
+        title: 'intro.testyourself.title'
     };
 
 
