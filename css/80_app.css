@@ -5884,7 +5884,7 @@ body {
 }
 
 .curtain-tooltip .popover-inner .button-section button {
-    width: 66.6666%;
+    width: 100%;
 }
 
 .curtain-tooltip .popover-inner .instruction:only-child {

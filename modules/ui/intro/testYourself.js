@@ -18,6 +18,7 @@ export function uiIntroTestYourself(context, reveal) {
     var hallId = 'n2061';
     // var houseOne = [-106.9649527711, 44.81185248557];
     var houseOne = [-108.76815050621282, 44.757092123438795]
+    var lives = 5;
 
     var springStreetId = 'w397';
     var springStreetEndId = 'n1834';
@@ -97,8 +98,8 @@ export function uiIntroTestYourself(context, reveal) {
     function stepOne() {
         let way = null;
         var onClick = function() { evaluateStepOne(way); };
-        revealAll(houseOne, helpHtml('intro.testyourself.click_done'),
-            { buttonText: t.html('intro.testyourself.done'), buttonCallback: onClick, tooltipBox: '.intro-nav-wrap .chapter-testYourself' }
+        revealAll(houseOne, helpHtml('intro.testyourself.lives_remaining')+"<br/>"+helpHtml('intro.testyourself.hearts'+lives),
+            { buttonText: t.html('intro.testyourself.click_done'), buttonCallback: onClick, tooltipBox: '.intro-nav-wrap .chapter-testYourself' }
         );
 
         context.on('enter.intro', function(mode) {
@@ -120,7 +121,7 @@ export function uiIntroTestYourself(context, reveal) {
             var points = utilArrayUniq(nodes)
                 .map(function(n) { return context.projection(n.loc); });
 
-            console.log(loc_points);
+            // console.log(loc_points);
             var answers = [
                 [-108.76839480774868, 44.757277204079415],
                 [-108.76818096655359, 44.75727709782705],
@@ -153,6 +154,11 @@ export function uiIntroTestYourself(context, reveal) {
     }
 
     function retryStepOne() {
+        lives -= 1;
+        if(lives === 0) {
+            lives = 5;
+            return continueTo(noLivesRemaining);
+        }
         context.enter(modeBrowse(context));
         context.history().reset('initial');
         var onClick = function() { continueTo(stepOne); };
@@ -166,6 +172,19 @@ export function uiIntroTestYourself(context, reveal) {
                 { duration: 0, buttonText: t.html('intro.ok'), buttonCallback: onClick }
             );
         });
+
+        function continueTo(nextStep) {
+            context.map().on('move.intro drawn.intro', null);
+            nextStep();
+        }
+    }
+
+    function noLivesRemaining() {
+        var onClick = function() { continueTo(introTest); };
+
+        revealAll(houseOne, helpHtml('intro.testyourself.no_lives_remaining'),
+            { buttonText: t.html('intro.testyourself.retry'), buttonCallback: onClick, tooltipBox: '.intro-nav-wrap .chapter-testYourself' }
+        );
 
         function continueTo(nextStep) {
             context.map().on('move.intro drawn.intro', null);

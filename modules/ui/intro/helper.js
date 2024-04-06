@@ -75,6 +75,7 @@ export function helpHtml(id, replacements) {
         undo_icon: icon(localizer.textDirection() === 'rtl' ? '#iD-icon-redo' : '#iD-icon-undo', 'inline'),
         redo_icon: icon(localizer.textDirection() === 'rtl' ? '#iD-icon-undo' : '#iD-icon-redo', 'inline'),
         save_icon: icon('#iD-icon-save', 'inline'),
+        heart_icon: icon('#iD-icon-heart', 'inline'),
 
         // operation icons
         circularize_icon: icon('#iD-operation-circularize', 'inline operation'),
@@ -338,12 +339,14 @@ export function similarityScore(poly1, poly2) {
 FUNCTIONS FOR CHECKING CORRECTNESS OF ROADS
 */
 
+//checks if the roads with these IDs share a node
 export function roadConnected(ID1, ID2, context) {
     // code mostly the same as isLineConnected() in line.js
 
-    var road_1_nodes = context.graph().childNodes(ID1)
-    return road_1_nodes.some(function(node) {
-        return context.graph().parentWays(node).some(function(parent) {
+    var road_1_nodes = context.graph().childNodes(ID1) // get the road 1 from the map
+    return road_1_nodes.some(function(node) { // for every node in road 1
+
+        return context.graph().parentWays(node).some(function(parent) { // check if one of its parent roads is road 2
             return parent.id === ID2;
         });
     });
@@ -362,16 +365,16 @@ function trim_road_ends(road) {
 
 //takes in two roads [[x, y]...]  and returns a closed polygon made from combining the two roads
 //if reverse is true, we reverse the second road, otherwise not
-function road_combine(road1, road2, reverse) {
+function road_combine(road1, road2, reversed) {
 
     road1 = trim_road_ends(road1);
     road2 = trim_road_ends(road2);
     let secondRoad = road2.slice();
-    if (reverse) {
+    if (reversed) {
         secondRoad = secondRoad.reverse();
     }
 
-    // Concatenate first road with reversed second road
+    // Concatenate first road with (reversed) second road
     let combinedArray = road1.concat(secondRoad);
 
     // Add the first point of the first array to the end to close the loop
@@ -403,6 +406,7 @@ function self_intersecting_area(poly_coords) {
     return totalArea;
 }
 
+
 //takes in a trimmed road and calculates the sum of the lengths of its edges
 function road_length(road) {
     // Function to calculate the Euclidean distance between two points
@@ -419,6 +423,7 @@ function road_length(road) {
     return totalLength;
 }
 
+//THIS IS THE MAIN FUNCTION
 //takes in two roads[[x, y]...] and [[x, y]...], and returns the normalized (i.e. divided by the length of the first road)
 //area of the shape gotten by connecting the endpoints of the two roads to each other
 export function roadScore(road1, road2) {
