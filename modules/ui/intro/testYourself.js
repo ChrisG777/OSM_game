@@ -16,7 +16,8 @@ export function uiIntroTestYourself(context, reveal) {
     var dispatch = d3_dispatch('done');
     var timeouts = [];
     var hallId = 'n2061';
-    var townHall = [-85.63591, 41.94285];
+    var kresge = [-71.0950, 42.3581]
+
     var springStreetId = 'w397';
     var springStreetEndId = 'n1834';
     var springStreet = [-85.63582, 41.94255];
@@ -45,14 +46,27 @@ export function uiIntroTestYourself(context, reveal) {
         return ids.length === 1 && ids[0] === hallId;
     }
 
-
-    function dragMap() {
+    function introTest() {
         context.enter(modeBrowse(context));
         context.history().reset('initial');
 
-        var msec = transitionTime(townHall, context.map().center());
+        var onClick = function() { continueTo(dragMap); };
+
+        reveal('.intro-nav-wrap .chapter-testYourself', helpHtml('intro.testyourself.intro'),
+            { buttonText: t.html('intro.ok'), buttonCallback: onClick }
+        );
+
+        function continueTo(nextStep) {
+            context.map().on('drawn.intro', null);
+            nextStep();
+        }
+    }
+
+
+    function dragMap() {
+        var msec = transitionTime(kresge, context.map().center());
         if (msec) { reveal(null, null, { duration: 0 }); }
-        context.map().centerZoomEase(townHall, 19, msec);
+        context.map().centerZoomEase(kresge, 17.4, msec);
 
         timeout(function() {
             var centerStart = context.map().center();
@@ -536,7 +550,7 @@ export function uiIntroTestYourself(context, reveal) {
 
 
     chapter.enter = function() {
-        dragMap();
+        introTest();
     };
 
 

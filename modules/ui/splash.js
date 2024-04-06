@@ -77,7 +77,7 @@ export function uiSplash(context) {
       .append('button')
       .attr('class', 'walkthrough')
       .on('click', () => {
-        context.container().call(uiIntro(context));
+        context.container().call(uiIntro(context, false));
         modalSelection.close();
       });
 
@@ -91,18 +91,21 @@ export function uiSplash(context) {
       .append('div')
       .call(t.append('splash.walkthrough'));
 
-    let startEditing = buttonWrap
+    let startTest = buttonWrap
       .append('button')
-      .attr('class', 'start-editing')
-      .on('click', modalSelection.close);
+      .attr('class', 'start-testyourself')
+      .on('click', () => {
+        context.container().call(uiIntro(context, true));
+        modalSelection.close();
+      });
 
-    startEditing
+      startTest
       .append('svg')
       .attr('class', 'logo logo-features')
       .append('use')
       .attr('xlink:href', '#iD-logo-features');
 
-    startEditing
+      startTest
       .append('div')
       .call(t.append('splash.start'));
 

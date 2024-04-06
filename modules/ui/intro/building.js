@@ -7,7 +7,6 @@ import { modeSelect } from '../../modes/select';
 import { utilArrayUniq, utilRebind } from '../../util';
 import { helpHtml, icon, pad, isMostlySquare, selectMenuItem, transitionTime } from './helper';
 
-
 export function uiIntroBuilding(context, reveal) {
     var dispatch = d3_dispatch('done');
     var house = [-85.62815, 41.95638];

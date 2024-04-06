@@ -1,6 +1,7 @@
 import { t, localizer } from '../../core/localizer';
 import { geoSphericalDistance, geoVecNormalizedDot } from '../../geo';
 import { uiCmd } from '../cmd';
+import { polygonClipping } from 'polygon-clipping';
 
 export function pointBox(loc, context) {
     var rect = context.surfaceRect();
@@ -251,6 +252,14 @@ export function isMostlySquare(points) {
 
     return true;
 }
+
+// determine if two polygons intersect
+export function doPolygonsIntersect(poly1, poly2) {
+    return polygonClipping.intersection(poly1, pol2).length > 0
+}
+
+// compute area of intersection of two polygons
+
 
 
 export function selectMenuItem(context, operation) {

@@ -43,7 +43,7 @@ const chapterFlow = [
 ];
 
 
-export function uiIntro(context) {
+export function uiIntro(context, isSkipToTest) {
   const INTRO_IMAGERY = 'EsriWorldImageryClarity';
   let _introGraph = {};
   let _currChapter;
@@ -123,6 +123,16 @@ export function uiIntro(context) {
     // Restore previous walkthrough progress..
     let storedProgress = prefs('walkthrough_progress') || '';
     let progress = storedProgress.split(';').filter(Boolean);
+    if (isSkipToTest) {
+      newProgress = '';
+      for (let i=0; i<chapterFlow.length; i++) {
+        if (chapterFlow[i] == 'testYourself') {
+          break;
+        }
+        newProgress.push(chapterFlow[i].join(';'));
+      }
+      progress = newProgress;
+    }
 
     let chapters = chapterFlow.map((chapter, i) => {
       let s = chapterUi[chapter](context, curtain.reveal)

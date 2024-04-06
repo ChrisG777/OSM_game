@@ -1060,7 +1060,7 @@ en:
     privacy: "{updateMessage} By using this software, you agree to do so in accordance with the {privacyLink}."
     privacy_settings: Your Privacy Settings
     walkthrough: "Start the Walkthrough"
-    start: "Edit now"
+    start: "Start the Test"
   source_switch:
     live: live
     lose_changes: "You have unsaved changes. Switching the map server will discard them. Are you sure you want to switch servers?"
@@ -2320,12 +2320,14 @@ en:
       play: "Great Job! Practice tracing a few more buildings, and try some of the other operations in the edit menu. **When you are ready to continue to the next chapter, press '{next}'.**"
     testyourself:
       title: "Test Yourself"
+      intro: "Now, you are ready to test your skills! Start the test when you are ready."
+
+
       map_info: "The main map area shows OpenStreetMap data on top of a background."
       drag: "You can click-and-drag the map with the {leftclick} left mouse button to move it around. You can also use the arrow keys on a keyboard. **Drag the map!**"
       drag_touch: "You can {touchdrag_icon} tap-and-drag the map to move it around. You can also use the arrow keys on a keyboard. **Drag the map!**"
       zoom: "You can zoom the map by scrolling with a {mousewheel_icon} mouse wheel or trackpad, or by pressing the {plus} / {minus} buttons. **Zoom the map!**"
       zoom_touch: "You can zoom the map by {pinch_icon} pinching it with two fingers, {doubletap_icon} double-tapping a location, or pressing the {plus} / {minus} buttons. **Zoom the map!**"
-      features: "We use the word *features* to describe the things that appear on the map. Anything in the real world can be mapped as a feature on OpenStreetMap."
       points_lines_areas: "Map features are represented using *points, lines, or areas.*"
       nodes_ways: "In OpenStreetMap, points are sometimes called *nodes*, and lines and areas are sometimes called *ways*."
       click_townhall: "All features on the map can be selected by {leftclick} clicking on them. **Click the point to select it.**"
