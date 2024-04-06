@@ -258,6 +258,27 @@ export function isMostlySquare(points) {
     return true;
 }
 
+
+/**
+ * Prepares a polygon for use with polygonClipping.intersection by closing it (if not already closed)
+ * and wrapping it in an extra set of brackets.
+ * @param {Array} polygon - An array of [x, y] coordinates representing the polygon.
+ * @returns {Array} A polygon wrapped in an extra array and closed, suitable for polygonClipping.intersection.
+ */
+export function preparePolygonForClipping(polygon) {
+    // Clone to avoid mutating the original polygon
+    let preparedPolygon = polygon.slice();
+
+    // Ensure the polygon is closed by adding the first point to the end if it's not already
+    if (preparedPolygon[0] !== preparedPolygon[preparedPolygon.length - 1]) {
+        preparedPolygon.push(preparedPolygon[0]);
+    }
+
+    // Wrap the polygon in an extra set of brackets as expected by polygonClipping
+    return [preparedPolygon];
+}
+
+
 /**
  * Determines if two polygons intersect.
  * @param {Array} poly1 - The first polygon, an array of [x, y] coordinates.
@@ -265,8 +286,10 @@ export function isMostlySquare(points) {
  * @returns {boolean} True if the polygons intersect, false otherwise.
  */
 export function doPolygonsIntersect(poly1, poly2) {
-    // Fixing a typo in the original code: pol2 -> poly2
-    return polygonClipping.intersection(poly1, poly2).length > 0;
+    // Wrap polygons andin additional array and ensure they're closed as expected by polygon-clipping library
+    const wrappedPoly1 = preparePolygonForClipping(poly1)
+    const wrappedPoly2 = preparePolygonForClipping(poly2)
+    return polygonClipping.intersection(wrappedPoly1, wrappedPoly2).length > 0;
 }
 
 /**
@@ -277,17 +300,9 @@ export function doPolygonsIntersect(poly1, poly2) {
  * @returns {number} The similarity score between the two polygons.
  */
 export function similarityScore(poly1, poly2) {
-    // Ensure polygons are closed by adding the first point to the end if not already closed
-    if (poly1[0] !== poly1[poly1.length - 1]) {
-        poly1 = [...poly1, poly1[0]];
-    }
-    if (poly2[0] !== poly2[poly2.length - 1]) {
-        poly2 = [...poly2, poly2[0]];
-    }
-
-    // Wrap polygons in additional array as expected by polygon-clipping library
-    const wrappedPoly1 = [poly1];
-    const wrappedPoly2 = [poly2];
+    // Wrap polygons andin additional array and ensure they're closed as expected by polygon-clipping library
+    const wrappedPoly1 = preparePolygonForClipping(poly1)
+    const wrappedPoly2 = preparePolygonForClipping(poly2)
 
     // Calculate the intersection area
     const intersectionResult = polygonClipping.intersection(wrappedPoly1, wrappedPoly2);

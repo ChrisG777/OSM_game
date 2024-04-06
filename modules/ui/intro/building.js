@@ -6,7 +6,7 @@ import { modeBrowse } from '../../modes/browse';
 import { modeSelect } from '../../modes/select';
 import { utilArrayUniq, utilRebind } from '../../util';
 import { helpHtml, icon, pad, isMostlySquare, selectMenuItem, transitionTime } from './helper';
-import { similarityScore } from './helper';
+import { similarityScore, doPolygonsIntersect } from './helper';
 
 export function uiIntroBuilding(context, reveal) {
     var dispatch = d3_dispatch('done');
@@ -140,7 +140,6 @@ export function uiIntroBuilding(context, reveal) {
                 var nodes = graph.childNodes(way);
                 var loc_points = utilArrayUniq(nodes)
                 .map(function(n) { return n.loc; });
-                console.log(loc_points)
 
                 var points = utilArrayUniq(nodes)
                     .map(function(n) { return context.projection(n.loc); });
@@ -148,6 +147,7 @@ export function uiIntroBuilding(context, reveal) {
                 var answers = [[-85.62826299329345, 41.95646885082224], [-85.62817359505742, 41.95645967629005], [-85.62818223365637, 41.95641693970446],  [-85.62798923509716, 41.95639405594575],  [-85.6280077433871, 41.956312622578416], [-85.62828498531188, 41.956345343198116]]
                 answers = answers.map(function (n) { return context.projection(n)})
                 console.log(similarityScore(points, answers))
+                console.log(doPolygonsIntersect(points, answers))
 
 
                 if (isMostlySquare(points)) {

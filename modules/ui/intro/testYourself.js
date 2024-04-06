@@ -48,7 +48,7 @@ export function uiIntroTestYourself(context, reveal) {
 
     function revealHouse(center, text, options) {
         var padding = 320 * Math.pow(2, context.map().zoom() - 20);
-        var box = pad(center, padding, context);
+        var box = pad(center, 1000, context);
         reveal(box, text, options);
     }
 
@@ -71,7 +71,7 @@ export function uiIntroTestYourself(context, reveal) {
 
     function stepOne() {
         var msec = transitionTime(houseOne, context.map().center());
-        if (msec) { reveal(null, null, { duration: 0 }); }
+        if (msec) { reveal( null, null, { duration: 0 }); }
         context.map().centerZoomEase(houseOne, 19, msec);
 
         timeout(function() {
