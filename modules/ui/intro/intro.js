@@ -1,5 +1,5 @@
 import { t, localizer } from '../../core/localizer';
-import { localize } from './helper';
+import { localize, helpHtml } from './helper';
 
 import { prefs } from '../../core/preferences';
 import { fileFetcher } from '../../core/file_fetcher';
@@ -123,16 +123,6 @@ export function uiIntro(context, isSkipToTest) {
     // Restore previous walkthrough progress..
     let storedProgress = prefs('walkthrough_progress') || '';
     let progress = storedProgress.split(';').filter(Boolean);
-    if (isSkipToTest) {
-      newProgress = '';
-      for (let i=0; i<chapterFlow.length; i++) {
-        if (chapterFlow[i] == 'testYourself') {
-          break;
-        }
-        newProgress.push(chapterFlow[i].join(';'));
-      }
-      progress = newProgress;
-    }
 
     let chapters = chapterFlow.map((chapter, i) => {
       let s = chapterUi[chapter](context, curtain.reveal)
@@ -211,13 +201,26 @@ export function uiIntro(context, isSkipToTest) {
       .attr('class', 'status')
       .call(svgIcon((localizer.textDirection() === 'rtl' ? '#iD-icon-backward' : '#iD-icon-forward'), 'inline'));
 
-    enterChapter(null, chapters[0]);
-
+    if (isSkipToTest) {
+      enterChapter(null, chapters[chapters.length - 2]);
+    }
+    else {
+      enterChapter(null, chapters[0]);
+    }
 
     function enterChapter(d3_event, newChapter) {
       if (_currChapter) { _currChapter.exit(); }
       context.enter(modeBrowse(context));
 
+      if (newChapter == chapters[chapters.length-1]) {
+        if (!progress.includes('testYourself')) {
+          curtain.reveal('.intro-nav-wrap .chapter-testYourself',
+            helpHtml('intro.startediting.stop'),
+            { buttonText: t.html('intro.ok'), buttonCallback: chapters[chapters.length-2].enter}
+          );
+          return;
+        }
+      }
       _currChapter = newChapter;
       _currChapter.enter();
 

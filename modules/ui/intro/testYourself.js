@@ -9,14 +9,14 @@ import { t } from '../../core/localizer';
 import { modeBrowse } from '../../modes/browse';
 import { modeSelect } from '../../modes/select';
 import { utilRebind } from '../../util/rebind';
-import { helpHtml, icon, pointBox, transitionTime } from './helper';
+import { helpHtml, icon, pad, pointBox, transitionTime } from './helper';
 
 
 export function uiIntroTestYourself(context, reveal) {
     var dispatch = d3_dispatch('done');
     var timeouts = [];
     var hallId = 'n2061';
-    var kresge = [-71.0950, 42.3581]
+    var houseOne = [-106.9649527711, 44.81185248557];
 
     var springStreetId = 'w397';
     var springStreetEndId = 'n1834';
@@ -46,11 +46,17 @@ export function uiIntroTestYourself(context, reveal) {
         return ids.length === 1 && ids[0] === hallId;
     }
 
+    function revealHouse(center, text, options) {
+        var padding = 320 * Math.pow(2, context.map().zoom() - 20);
+        var box = pad(center, padding, context);
+        reveal(box, text, options);
+    }
+
     function introTest() {
         context.enter(modeBrowse(context));
         context.history().reset('initial');
 
-        var onClick = function() { continueTo(dragMap); };
+        var onClick = function() { continueTo(stepOne); };
 
         reveal('.intro-nav-wrap .chapter-testYourself', helpHtml('intro.testyourself.intro'),
             { buttonText: t.html('intro.ok'), buttonCallback: onClick }
@@ -63,30 +69,25 @@ export function uiIntroTestYourself(context, reveal) {
     }
 
 
-    function dragMap() {
-        var msec = transitionTime(kresge, context.map().center());
+    function stepOne() {
+        var msec = transitionTime(houseOne, context.map().center());
         if (msec) { reveal(null, null, { duration: 0 }); }
-        context.map().centerZoomEase(kresge, 17.4, msec);
+        context.map().centerZoomEase(houseOne, 19, msec);
 
         timeout(function() {
-            var centerStart = context.map().center();
+            var startString = helpHtml('intro.testyourself.stepOne');
+            revealHouse(houseOne, startString);
 
-            var textId = context.lastPointerType() === 'mouse' ? 'drag' : 'drag_touch';
-            var dragString = helpHtml('intro.navigation.map_info') + '{br}' + helpHtml('intro.navigation.' + textId);
-            reveal('.surface', dragString);
-            context.map().on('drawn.intro', function() {
-                reveal('.surface', dragString, { duration: 0 });
+            context.map().on('move.intro drawn.intro', function() {
+                revealHouse(houseOne, startString, { duration: 0 });
             });
 
-            context.map().on('move.intro', function() {
-                var centerNow = context.map().center();
-                if (centerStart[0] !== centerNow[0] || centerStart[1] !== centerNow[1]) {
-                    context.map().on('move.intro', null);
-                    timeout(function() { continueTo(zoomMap); }, 3000);
-                }
+            context.on('enter.intro', function(mode) {
+                if (mode.id !== 'draw-area') return chapter.restart();
+                continueTo(zoomMap);
             });
 
-        }, msec + 100);
+        }, 550);  // after easing
 
         function continueTo(nextStep) {
             context.map().on('move.intro drawn.intro', null);

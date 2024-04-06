@@ -2321,7 +2321,7 @@ en:
     testyourself:
       title: "Test Yourself"
       intro: "Now, you are ready to test your skills! Start the test when you are ready."
-
+      stepOne: "Map this building."
 
       map_info: "The main map area shows OpenStreetMap data on top of a background."
       drag: "You can click-and-drag the map with the {leftclick} left mouse button to move it around. You can also use the arrow keys on a keyboard. **Drag the map!**"
@@ -2346,6 +2346,7 @@ en:
 
     startediting:
       title: "Start Editing"
+      stop: "You cannot start editing real maps until you pass the test at the end of the walkthrough!"
       help: "You're now ready to edit OpenStreetMap!{br}You can replay this walkthrough anytime or view more documentation by pressing the {help_icon} {help} button or the `{help_key}` key."
       shortcuts: "You can view a list of commands along with their keyboard shortcuts by pressing the `{shortcuts_key}` key."
       save: "Don't forget to regularly save your changes!"

@@ -1,7 +1,12 @@
 import { t, localizer } from '../../core/localizer';
 import { geoSphericalDistance, geoVecNormalizedDot } from '../../geo';
 import { uiCmd } from '../cmd';
-import { polygonClipping } from 'polygon-clipping';
+
+import { computeArea, LatLng } from 'spherical-geometry-js';
+const polygonClipping = require('polygon-clipping')
+const areaPolygon = require('area-polygon')
+
+
 
 export function pointBox(loc, context) {
     var rect = context.surfaceRect();
@@ -253,19 +258,62 @@ export function isMostlySquare(points) {
     return true;
 }
 
-// determine if two polygons intersect
+/**
+ * Determines if two polygons intersect.
+ * @param {Array} poly1 - The first polygon, an array of [x, y] coordinates.
+ * @param {Array} poly2 - The second polygon, an array of [x, y] coordinates.
+ * @returns {boolean} True if the polygons intersect, false otherwise.
+ */
 export function doPolygonsIntersect(poly1, poly2) {
-    return polygonClipping.intersection(poly1, pol2).length > 0
+    // Fixing a typo in the original code: pol2 -> poly2
+    return polygonClipping.intersection(poly1, poly2).length > 0;
 }
 
-// compute area of intersection of two polygons
+/**
+ * Calculates the similarity score between two polygons based on the area of their intersection.
+ * The similarity score is a number between 0 and 1, where 1 indicates identical polygons.
+ * @param {Array} poly1 - The first polygon, an array of [x, y] coordinates.
+ * @param {Array} poly2 - The second polygon, an array of [x, y] coordinates.
+ * @returns {number} The similarity score between the two polygons.
+ */
+export function similarityScore(poly1, poly2) {
+    // Ensure polygons are closed by adding the first point to the end if not already closed
+    if (poly1[0] !== poly1[poly1.length - 1]) {
+        poly1 = [...poly1, poly1[0]];
+    }
+    if (poly2[0] !== poly2[poly2.length - 1]) {
+        poly2 = [...poly2, poly2[0]];
+    }
 
+    // Wrap polygons in additional array as expected by polygon-clipping library
+    const wrappedPoly1 = [poly1];
+    const wrappedPoly2 = [poly2];
+
+    // Calculate the intersection area
+    const intersectionResult = polygonClipping.intersection(wrappedPoly1, wrappedPoly2);
+    const intersectionArea = intersectionResult.length > 0 ? areaPolygon(intersectionResult[0][0]) : 0;
+
+    // Calculate areas of the original polygons
+    const areaPoly1 = areaPolygon(poly1);
+    const areaPoly2 = areaPolygon(poly2);
+
+    // Calculate non-overlapping areas
+    const AminusB = areaPoly1 - intersectionArea;
+    const BminusA = areaPoly2 - intersectionArea;
+
+    // Determine the total and "good" (overlapping) area
+    const badArea = AminusB + BminusA;
+    const totalArea = areaPoly1 + areaPoly2 - intersectionArea;
+    const goodArea = totalArea - badArea;
+
+    // Return the similarity score as the ratio of goodArea to totalArea
+    return goodArea / totalArea;
+}
 
 
 export function selectMenuItem(context, operation) {
     return context.container().select('.edit-menu .edit-menu-item-' + operation);
 }
-
 
 export function transitionTime(point1, point2) {
     var distance = geoSphericalDistance(point1, point2);
