@@ -8,15 +8,16 @@ import { presetManager } from '../../presets';
 import { t } from '../../core/localizer';
 import { modeBrowse } from '../../modes/browse';
 import { modeSelect } from '../../modes/select';
-import { utilRebind } from '../../util/rebind';
-import { helpHtml, icon, pad, pointBox, transitionTime } from './helper';
+import { utilArrayUniq, utilRebind } from '../../util';
+import { helpHtml, icon, pad, pointBox, transitionTime, isMostlySquare, similarityScore } from './helper';
 
 
 export function uiIntroTestYourself(context, reveal) {
     var dispatch = d3_dispatch('done');
     var timeouts = [];
     var hallId = 'n2061';
-    var houseOne = [-106.9649527711, 44.81185248557];
+    // var houseOne = [-106.9649527711, 44.81185248557];
+    var houseOne = [-108.76815050621282, 44.757092123438795]
 
     var springStreetId = 'w397';
     var springStreetEndId = 'n1834';
@@ -47,8 +48,13 @@ export function uiIntroTestYourself(context, reveal) {
     }
 
     function revealHouse(center, text, options) {
-        var padding = 320 * Math.pow(2, context.map().zoom() - 20);
-        var box = pad(center, 1000, context);
+        var padding = 350 * Math.pow(2, context.map().zoom() - 20);
+        var box = pad(center, padding, context);
+        reveal(box, text, options);
+    }
+
+    function revealAll(center, text, options) {
+        var box = pad(center, 100000, context);
         reveal(box, text, options);
     }
 
@@ -56,7 +62,7 @@ export function uiIntroTestYourself(context, reveal) {
         context.enter(modeBrowse(context));
         context.history().reset('initial');
 
-        var onClick = function() { continueTo(stepOne); };
+        var onClick = function() { continueTo(stepOneInstructions); };
 
         reveal('.intro-nav-wrap .chapter-testYourself', helpHtml('intro.testyourself.intro'),
             { buttonText: t.html('intro.ok'), buttonCallback: onClick }
@@ -69,25 +75,97 @@ export function uiIntroTestYourself(context, reveal) {
     }
 
 
-    function stepOne() {
+    function stepOneInstructions() {
         var msec = transitionTime(houseOne, context.map().center());
         if (msec) { reveal( null, null, { duration: 0 }); }
         context.map().centerZoomEase(houseOne, 19, msec);
 
+        var onClick = function() { continueTo(stepOne); };
+
         timeout(function() {
-            var startString = helpHtml('intro.testyourself.stepOne');
-            revealHouse(houseOne, startString);
+            revealHouse(houseOne, helpHtml('intro.testyourself.stepOne'),
+                { buttonText: t.html('intro.testyourself.start'), buttonCallback: onClick }
+            );
+        }, msec + 100);
 
-            context.map().on('move.intro drawn.intro', function() {
-                revealHouse(houseOne, startString, { duration: 0 });
-            });
+        function continueTo(nextStep) {
+            context.map().on('move.intro drawn.intro', null);
+            nextStep();
+        }
+    }
 
-            context.on('enter.intro', function(mode) {
-                if (mode.id !== 'draw-area') return chapter.restart();
-                continueTo(zoomMap);
-            });
+    function stepOne() {
+        let way = null;
+        var onClick = function() { evaluateStepOne(way); };
+        revealAll(houseOne, helpHtml('intro.testyourself.click_done'),
+            { buttonText: t.html('intro.testyourself.done'), buttonCallback: onClick, tooltipBox: '.intro-nav-wrap .chapter-testYourself' }
+        );
 
-        }, 550);  // after easing
+        context.on('enter.intro', function(mode) {
+            if (mode.id === 'select') {
+                way = context.entity(context.selectedIDs()[0]);
+            }
+        });
+
+        function evaluateStepOne(way) {
+            if (way === null) {
+                return continueTo(retryStepOne);
+            }
+            var graph = context.graph();
+            var nodes = graph.childNodes(way);
+
+            var loc_points = utilArrayUniq(nodes)
+                .map(function(n) { return n.loc; });
+
+            var points = utilArrayUniq(nodes)
+                .map(function(n) { return context.projection(n.loc); });
+
+            console.log(loc_points);
+            var answers = [
+                [-108.76839480774868, 44.757277204079415],
+                [-108.76818096655359, 44.75727709782705],
+                [-108.76818119671758, 44.75705426890007],
+                [-108.76799626532393, 44.75705416539446],
+                [-108.76799600584256, 44.75727191445505],
+                [-108.76776877746883, 44.75727177097341],
+                [-108.76776927329404, 44.756890931379615],
+                [-108.76839020879721, 44.75689134046913],
+                [-108.76839016069364, 44.75693250699196],
+                [-108.76852263621537, 44.756932575702685],
+                [-108.76852250928611, 44.75706198565325],
+                [-108.76839501357826, 44.75706192407335],
+               ]
+            answers = answers.map(function (n) { return context.projection(n)});
+            console.log(similarityScore(points, answers));
+            //console.log(doPolygonsIntersect(points, answers))
+
+            if (isMostlySquare(points) && similarityScore(points, answers) > 0.94) {
+                return continueTo(zoomMap);
+            } else {
+                return continueTo(retryStepOne);
+            }
+        }
+
+        function continueTo(nextStep) {
+            context.map().on('move.intro drawn.intro', null);
+            nextStep();
+        }
+    }
+
+    function retryStepOne() {
+        context.enter(modeBrowse(context));
+        context.history().reset('initial');
+        var onClick = function() { continueTo(stepOne); };
+
+        revealHouse(houseOne, helpHtml('intro.testyourself.retry_step_one'),
+            { buttonText: t.html('intro.ok'), buttonCallback: onClick }
+        );
+
+        context.map().on('move.intro drawn.intro', function() {
+            revealHouse(houseOne, helpHtml('intro.testyourself.retry_step_one'),
+                { duration: 0, buttonText: t.html('intro.ok'), buttonCallback: onClick }
+            );
+        });
 
         function continueTo(nextStep) {
             context.map().on('move.intro drawn.intro', null);

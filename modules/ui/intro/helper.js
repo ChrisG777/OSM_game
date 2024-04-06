@@ -5,6 +5,10 @@ import { uiCmd } from '../cmd';
 import { computeArea, LatLng } from 'spherical-geometry-js';
 const polygonClipping = require('polygon-clipping')
 const areaPolygon = require('area-polygon')
+const simplepolygon = require('simplepolygon');
+const lodash = require('lodash');
+
+
 
 
 
@@ -259,6 +263,10 @@ export function isMostlySquare(points) {
 }
 
 
+/*
+FUNCTIONS FOR CHECKING CORRECTNESS OF AREAS
+*/
+
 /**
  * Prepares a polygon for use with polygonClipping.intersection by closing it (if not already closed)
  * and wrapping it in an extra set of brackets.
@@ -324,6 +332,111 @@ export function similarityScore(poly1, poly2) {
     // Return the similarity score as the ratio of goodArea to totalArea
     return goodArea / totalArea;
 }
+
+
+/*
+FUNCTIONS FOR CHECKING CORRECTNESS OF ROADS
+*/
+
+export function roadConnected(ID1, ID2, context) {
+    // code mostly the same as isLineConnected() in line.js
+
+    var road_1_nodes = context.graph().childNodes(ID1)
+    return road_1_nodes.some(function(node) {
+        return context.graph().parentWays(node).some(function(parent) {
+            return parent.id === ID2;
+        });
+    });
+}
+
+// takes in a road [[x, y]...] and if it ends in [...,z, z, z, z,], just ends it with one [z]
+function trim_road_ends(road) {
+    var last_point = road[road.length-1];
+    while (lodash.isEqual(road[road.length-1], last_point)) { // just checks if the current last point is the same as the original last point
+        road.pop();
+    }
+    road.push(last_point);
+    return road;
+}
+
+
+//takes in two roads [[x, y]...]  and returns a closed polygon made from combining the two roads
+//if reverse is true, we reverse the second road, otherwise not
+function road_combine(road1, road2, reverse) {
+
+    road1 = trim_road_ends(road1);
+    road2 = trim_road_ends(road2);
+    let secondRoad = road2.slice();
+    if (reverse) {
+        secondRoad = secondRoad.reverse();
+    }
+
+    // Concatenate first road with reversed second road
+    let combinedArray = road1.concat(secondRoad);
+
+    // Add the first point of the first array to the end to close the loop
+    combinedArray.push(road1[0]);
+
+    return combinedArray;
+}
+
+
+//given a closed polygon in the form [[x, y]...] that could be self intersecting, find the sum of its enclosed unsigned area
+function self_intersecting_area(poly_coords) {
+    // Use simplepolygon to break the complex polygon into simple polygons
+    Polygon ={
+        "type": "Feature",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [poly_coords]
+        }
+      };
+    const simplePolygonsFeatureCollection = simplepolygon(Polygon);
+
+    // Sum the areas of the simple polygons
+    let totalArea = 0;
+    simplePolygonsFeatureCollection.features.forEach(feature => {
+    const polygon = feature.geometry.coordinates[0]; // Assuming each feature is a simple polygon
+    const area = areaPolygon(polygon);
+    totalArea += area;
+    });
+    return totalArea;
+}
+
+//takes in a trimmed road and calculates the sum of the lengths of its edges
+function road_length(road) {
+    // Function to calculate the Euclidean distance between two points
+    function distance(point1, point2) {
+        return Math.sqrt(Math.pow(point1[0] - point2[0], 2) + Math.pow(point1[1] - point2[1], 2));
+    }
+
+    let totalLength = 0;
+    // Iterate through the road points to sum the distances
+    for (let i = 0; i < road.length - 1; i++) {
+        totalLength += distance(road[i], road[i + 1]);
+    }
+
+    return totalLength;
+}
+
+//takes in two roads[[x, y]...] and [[x, y]...], and returns the normalized (i.e. divided by the length of the first road)
+//area of the shape gotten by connecting the endpoints of the two roads to each other
+export function roadScore(road1, road2) {
+
+    var combined_road_one = road_combine(road1, road2, true);
+    var road_area_one = self_intersecting_area(combined_road_one);
+
+    var combined_road_two = road_combine(road1, road2, false); //if the roads are given in opposite directions
+    var road_area_two =self_intersecting_area(combined_road_two);
+
+    var normalized_road_one = road_area_one /(road_length(road1)*road_length(road2))
+    var normalized_road_two = road_area_two /(road_length(road1)*road_length(road2))
+
+    const scaleFactor = 100;
+    return scaleFactor * Math.min(normalized_road_one, normalized_road_two)
+}
+
+
 
 
 export function selectMenuItem(context, operation) {

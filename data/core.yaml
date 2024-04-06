@@ -2322,6 +2322,10 @@ en:
       title: "Test Yourself"
       intro: "Now, you are ready to test your skills! Start the test when you are ready."
       stepOne: "Map this building."
+      start: Start!
+      done: Done
+      click_done: "Click when done"
+      retry_step_one: "Try again! Map this building"
 
       map_info: "The main map area shows OpenStreetMap data on top of a background."
       drag: "You can click-and-drag the map with the {leftclick} left mouse button to move it around. You can also use the arrow keys on a keyboard. **Drag the map!**"

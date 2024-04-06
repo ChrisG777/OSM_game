@@ -10,7 +10,7 @@ import { geoSphericalDistance } from '../../geo';
 import { modeBrowse } from '../../modes/browse';
 import { modeSelect } from '../../modes/select';
 import { utilRebind } from '../../util/rebind';
-import { helpHtml, icon, pad, selectMenuItem, transitionTime } from './helper';
+import { helpHtml, icon, pad, selectMenuItem, transitionTime, roadConnected, roadScore } from './helper';
 
 
 export function uiIntroLine(context, reveal) {
@@ -175,7 +175,6 @@ export function uiIntroLine(context, reveal) {
     function isLineConnected() {
         var entity = _tulipRoadID && context.hasEntity(_tulipRoadID);
         if (!entity) return false;
-
         var drawNodes = context.graph().childNodes(entity);
         return drawNodes.some(function(node) {
             return context.graph().parentWays(node).some(function(parent) {
@@ -183,6 +182,7 @@ export function uiIntroLine(context, reveal) {
             });
         });
     }
+
 
 
     function retryIntersect() {
@@ -221,6 +221,20 @@ export function uiIntroLine(context, reveal) {
         });
 
         function continueTo(nextStep) {
+            var drawNodes = context.graph().childNodes(entity);
+
+            road1 = drawNodes.map(function(node) {
+                return context.projection(node.loc);
+            });
+            console.log(road1);
+
+            road2 = [
+                [344.4450909309089, 124.28250471875072],
+                [348.24009281024337, 425.9183611944318],
+                [351.22265625, 688.1601562462747],
+               ]
+
+            console.log(roadScore(road1, road2))
             context.on('enter.intro', null);
             nextStep();
         }

@@ -144,10 +144,10 @@ export function uiIntroBuilding(context, reveal) {
                 var points = utilArrayUniq(nodes)
                     .map(function(n) { return context.projection(n.loc); });
 
-                var answers = [[-85.62826299329345, 41.95646885082224], [-85.62817359505742, 41.95645967629005], [-85.62818223365637, 41.95641693970446],  [-85.62798923509716, 41.95639405594575],  [-85.6280077433871, 41.956312622578416], [-85.62828498531188, 41.956345343198116]]
-                answers = answers.map(function (n) { return context.projection(n)})
-                console.log(similarityScore(points, answers))
-                console.log(doPolygonsIntersect(points, answers))
+                //var answers = [[-85.62826299329345, 41.95646885082224], [-85.62817359505742, 41.95645967629005], [-85.62818223365637, 41.95641693970446],  [-85.62798923509716, 41.95639405594575],  [-85.6280077433871, 41.956312622578416], [-85.62828498531188, 41.956345343198116]]
+                //answers = answers.map(function (n) { return context.projection(n)})
+                //console.log(similarityScore(points, answers))
+                //console.log(doPolygonsIntersect(points, answers))
 
 
                 if (isMostlySquare(points)) {
