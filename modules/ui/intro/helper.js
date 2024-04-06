@@ -303,7 +303,7 @@ export function similarityScore(poly1, poly2) {
 
     // Determine the total and "good" (overlapping) area
     const badArea = AminusB + BminusA;
-    const totalArea = areaPoly1 + areaPoly2 - intersectionArea;
+    const totalArea = areaPoly1 + areaPoly2;
     const goodArea = totalArea - badArea;
 
     // Return the similarity score as the ratio of goodArea to totalArea
