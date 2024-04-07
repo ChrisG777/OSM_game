@@ -156,6 +156,10 @@ export function uiIntroTestYourself(context, reveal) {
                 .map(function(n) { return context.projection(n.loc); });
 
             // console.log(loc_points);
+            // this is the ground truth for the area locations for the first task
+            // we got these by uncommenting the above console.log statement and then carefully going through the task
+            // then we copy pasted the raw longitude and latitude locations
+            // and ran them through cleancoords.py to extract the array of coordinates
             var answers = [
                 [-108.76839480774868, 44.757277204079415],
                 [-108.76818096655359, 44.75727709782705],
@@ -171,7 +175,7 @@ export function uiIntroTestYourself(context, reveal) {
                 [-108.76839501357826, 44.75706192407335],
                ]
             answers = answers.map(function (n) { return context.projection(n)});
-            console.log(similarityScore(points, answers));
+            //console.log(similarityScore(points, answers));
             //console.log(doPolygonsIntersect(points, answers))
 
             if (isMostlySquare(points) && similarityScore(points, answers) > 0.94) {
@@ -273,14 +277,14 @@ export function uiIntroTestYourself(context, reveal) {
             }
             var graph = context.graph();
             var nodes = graph.childNodes(way);
-            console.log(nodes);
+            //console.log(nodes);
             var loc_points = utilArrayUniq(nodes)
                 .map(function(n) { return n.loc; });
 
             var points = utilArrayUniq(nodes)
                 .map(function(n) { return context.projection(n.loc); });
 
-            console.log(loc_points);
+            //console.log(loc_points);
             var answers = [
                 [-120.29420525319166, 37.81922937162883],
                 [-120.29395848996226, 37.81937345050321],
@@ -419,7 +423,7 @@ export function uiIntroTestYourself(context, reveal) {
                 [-120.27546197659557, 37.81912766872467]
             ]
             answers = answers.map(function (n) { return context.projection(n)});
-            console.log(roadScore(answers, points));
+            //console.log(roadScore(answers, points));
             //console.log(doPolygonsIntersect(points, answers))
 
             if (roadScore(answers, points) < 0.25) {
@@ -525,7 +529,7 @@ export function uiIntroTestYourself(context, reveal) {
             var points = utilArrayUniq(nodes)
                 .map(function(n) { return context.projection(n.loc); });
 
-            console.log(loc_points);
+            //console.log(loc_points);
             var answers = [
                 [-96.06984493121493, 46.44499335095648],
                 [-96.0697316059092, 46.44486483282184],
@@ -803,7 +807,7 @@ export function uiIntroTestYourself(context, reveal) {
             ]
 
             answers = answers.map(function (n) { return context.projection(n)});
-            console.log(similarityScore(points, answers));
+            //console.log(similarityScore(points, answers));
             //console.log(doPolygonsIntersect(points, answers))
 
             if (similarityScore(points, answers) > 0.96) {
