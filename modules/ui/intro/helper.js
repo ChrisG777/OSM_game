@@ -9,9 +9,6 @@ const simplepolygon = require('simplepolygon');
 const lodash = require('lodash');
 
 
-
-
-
 export function pointBox(loc, context) {
     var rect = context.surfaceRect();
     var point = context.curtainProjection(loc);
@@ -273,7 +270,10 @@ FUNCTIONS FOR CHECKING CORRECTNESS OF AREAS
  * and wrapping it in an extra set of brackets.
  * @param {Array} polygon - An array of [x, y] coordinates representing the polygon.
  * @returns {Array} A polygon wrapped in an extra array and closed, suitable for polygonClipping.intersection.
- */
+example:
+input: [[0, 1], [1, 1], [1, 0], [0, 0]]
+output: [[[0, 1], [1, 1], [1, 0], [0, 0], [0, 1]]]
+*/
 export function preparePolygonForClipping(polygon) {
     // Clone to avoid mutating the original polygon
     let preparedPolygon = polygon.slice();
@@ -293,7 +293,10 @@ export function preparePolygonForClipping(polygon) {
  * @param {Array} poly1 - The first polygon, an array of [x, y] coordinates.
  * @param {Array} poly2 - The second polygon, an array of [x, y] coordinates.
  * @returns {boolean} True if the polygons intersect, false otherwise.
- */
+example
+input: ([[0, 2], [2, 0], [0, 0]], [[-1, 0], [-1, 1], [1, 1], [1, 0]])
+output: true
+*/
 export function doPolygonsIntersect(poly1, poly2) {
     // Wrap polygons andin additional array and ensure they're closed as expected by polygon-clipping library
     const wrappedPoly1 = preparePolygonForClipping(poly1)
@@ -307,7 +310,10 @@ export function doPolygonsIntersect(poly1, poly2) {
  * @param {Array} poly1 - The first polygon, an array of [x, y] coordinates.
  * @param {Array} poly2 - The second polygon, an array of [x, y] coordinates.
  * @returns {number} The similarity score between the two polygons.
- */
+ example
+ input: ([[0, 0], [2, 0], [2, 2], [0, 2]], [[1, 0], [3, 0], [3, 2], [1, 2]])
+ output: 0.5
+*/
 export function similarityScore(poly1, poly2) {
     // Wrap polygons andin additional array and ensure they're closed as expected by polygon-clipping library
     const wrappedPoly1 = preparePolygonForClipping(poly1)
@@ -352,7 +358,12 @@ export function roadConnected(ID1, ID2, context) {
     });
 }
 
-// takes in a road [[x, y]...] and if it ends in [...,z, z, z, z,], just ends it with one [z]
+/*
+takes in a road [[x, y]...] and if it ends in [...,z, z, z, z,], just ends it with one [z]
+example
+input: [[2, 3], [3, 4], [3, 4]]
+output: [[2, 3], [3, 4]]
+*/
 function trim_road_ends(road) {
     var last_point = road[road.length-1];
     while (lodash.isEqual(road[road.length-1], last_point)) { // just checks if the current last point is the same as the original last point
@@ -362,8 +373,12 @@ function trim_road_ends(road) {
     return road;
 }
 
-//takes in two roads [[x, y]...]  and returns a closed polygon made from combining the two roads
-//if reverse is true, we reverse the second road, otherwise not
+/*takes in two roads [[x, y]...]  and returns a closed polygon made from combining the two roads
+if reverse is true, we reverse the second road, otherwise not
+example
+input: ([[0, 0], [0, 2], [0, 4]], [[1, 0], [-1, 2], [1, 4]], true
+output: [[0, 0], [0, 2], [0, 4], [1, 4], [-1, 2], [1, 0]]
+*/
 function road_combine(road1, road2, reversed) {
 
     road1 = trim_road_ends(road1);
@@ -382,8 +397,21 @@ function road_combine(road1, road2, reversed) {
     return combinedArray;
 }
 
-
+/*
 //given a closed polygon in the form [[x, y]...] that could be self intersecting, find the sum of its enclosed unsigned area
+
+example:
+input: [[0, 0], [1, 1], [1, 0], [0, 1]]
+output: 0.5
+*/
+
+
+/* takes in a trimmed road and calculates the sum of the lengths of its edges
+
+example
+input: [[0, 0], [1, 0], [1, 1]]
+output:
+*/
 function self_intersecting_area(poly_coords) {
     // Use simplepolygon to break the complex polygon into simple polygons
     Polygon ={
@@ -405,10 +433,12 @@ function self_intersecting_area(poly_coords) {
     return totalArea;
 }
 
-
-//takes in a trimmed road and calculates the sum of the lengths of its edges
+/*Function to calculate the Euclidean distance between two points
+example
+input: [[0, 0], [3, 4]]
+output: 5
+*/
 function road_length(road) {
-    // Function to calculate the Euclidean distance between two points
     function distance(point1, point2) {
         return Math.sqrt(Math.pow(point1[0] - point2[0], 2) + Math.pow(point1[1] - point2[1], 2));
     }
@@ -422,14 +452,18 @@ function road_length(road) {
     return totalLength;
 }
 
+/**
+ * Checks if an array of [x, y] coordinates has any duplicate [x, y] points besides the first and last.
+ *
+ * @param {Array<[number, number]>} coordinates - The array of [x, y] coordinates.
+ * @returns {boolean} - True if there are any duplicate points, false otherwise.
+
+example
+input: [[2, 3], [4, 4], [5, 8], [2, 3], [1, 4]]
+output: true
+*/
 
 function hasDuplicatePoints(coordinates) {
-    /**
-     * Checks if an array of [x, y] coordinates has any duplicate [x, y] points besides the first and last.
-     *
-     * @param {Array<[number, number]>} coordinates - The array of [x, y] coordinates.
-     * @returns {boolean} - True if there are any duplicate points, false otherwise.
-     */
     // Create a Set to store unique coordinates
     const uniqueCoords = new Set();
 
@@ -450,9 +484,13 @@ function hasDuplicatePoints(coordinates) {
     return false;
   }
 
-//THIS IS THE MAIN FUNCTION
-//takes in two roads[[x, y]...] and [[x, y]...], and returns the normalized (i.e. divided by the length of the first road)
-//area of the shape gotten by connecting the endpoints of the two roads to each other
+/*THIS IS THE MAIN FUNCTION
+takes in two roads[[x, y]...] and [[x, y]...], and returns the normalized (i.e. divided by the length of the first road)
+area of the shape gotten by connecting the endpoints of the two roads to each other
+
+input:([[0, 0], [0, 2], [0, 4]], [[1, 0], [-1, 2], [1, 4]])
+output: 0.08838834764
+*/
 export function roadScore(road1, road2) {
 
     truncated_road_1 = trim_road_ends(road1)

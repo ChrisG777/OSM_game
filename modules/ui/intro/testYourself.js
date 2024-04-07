@@ -82,7 +82,7 @@ export function uiIntroTestYourself(context, reveal) {
         context.enter(modeBrowse(context));
         context.history().reset('initial');
 
-        var onClick = function() { continueTo(play); };
+        var onClick = function() { continueTo(stepOneInstructions); };
 
         reveal('.intro-nav-wrap .chapter-testYourself', helpHtml('intro.testyourself.intro'),
             { buttonText: t.html('intro.ok'), buttonCallback: onClick }
