@@ -5,7 +5,9 @@
 ## New Features for HOT Maps
 We've added a mandatory testing stage in the tutorial that all users must attempt before freely editing and modifying the existing map.
 * The stage consists of multiple mapping tasks such as house outlining and road tracing.
+  * This stage can be found under modules/ui/intro/testYourself.js 
 * Using our custom metrics, we evaluate the accuracy of the user's shapes and lines against the ground-truth existing maps.
+   * Accessible via the similarityScore and roadScore functions in modules/ui/intro/helper.js
 * Users have a finite number of *lives* that keep track of the number of mistakes, only granting full editing permissions to users who make four mistakes or fewer.
 
 ## iD Basics
