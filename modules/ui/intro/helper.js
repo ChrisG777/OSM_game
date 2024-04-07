@@ -362,7 +362,6 @@ function trim_road_ends(road) {
     return road;
 }
 
-
 //takes in two roads [[x, y]...]  and returns a closed polygon made from combining the two roads
 //if reverse is true, we reverse the second road, otherwise not
 function road_combine(road1, road2, reversed) {
@@ -423,19 +422,53 @@ function road_length(road) {
     return totalLength;
 }
 
+
+function hasDuplicatePoints(coordinates) {
+    /**
+     * Checks if an array of [x, y] coordinates has any duplicate [x, y] points besides the first and last.
+     *
+     * @param {Array<[number, number]>} coordinates - The array of [x, y] coordinates.
+     * @returns {boolean} - True if there are any duplicate points, false otherwise.
+     */
+    // Create a Set to store unique coordinates
+    const uniqueCoords = new Set();
+
+    // Add the first and last coordinates to the Set
+    uniqueCoords.add(coordinates[0].toString());
+    uniqueCoords.add(coordinates[coordinates.length - 1].toString());
+
+    // Check if any other coordinates are duplicates
+    for (let i = 1; i < coordinates.length - 1; i++) {
+      const [x, y] = coordinates[i];
+      const coordString = `${x},${y}`;
+      if (uniqueCoords.has(coordString)) {
+        return true;
+      }
+      uniqueCoords.add(coordString);
+    }
+
+    return false;
+  }
+
 //THIS IS THE MAIN FUNCTION
 //takes in two roads[[x, y]...] and [[x, y]...], and returns the normalized (i.e. divided by the length of the first road)
 //area of the shape gotten by connecting the endpoints of the two roads to each other
 export function roadScore(road1, road2) {
 
-    var combined_road_one = road_combine(road1, road2, true);
+    truncated_road_1 = trim_road_ends(road1)
+    truncated_road_2 = trim_road_ends(road2)
+    if (hasDuplicatePoints(truncated_road_1) || hasDuplicatePoints(truncated_road_2)) {
+        return 76000; //this is what Nilay got when he did this for the first time
+    }
+
+    var combined_road_one = road_combine(truncated_road_1, truncated_road_2, true);
     var road_area_one = self_intersecting_area(combined_road_one);
 
     var combined_road_two = road_combine(road1, road2, false); //if the roads are given in opposite directions
     var road_area_two =self_intersecting_area(combined_road_two);
 
-    var normalized_road_one = road_area_one /(road_length(road1)*road_length(road2))
-    var normalized_road_two = road_area_two /(road_length(road1)*road_length(road2))
+    var normalized_road_one = road_area_one /(road_length(road1)*road_length(road1))
+    var normalized_road_two = road_area_two /(road_length(road1)*road_length(road1))
 
     const scaleFactor = 100;
     return scaleFactor * Math.min(normalized_road_one, normalized_road_two)
