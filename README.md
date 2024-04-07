@@ -1,8 +1,8 @@
-# MapMania: mapping game feature for iD JavaScript editor [OpenStreetMap](https://www.openstreetmap.org/)
+# HOT Maps: mapping game feature for iD JavaScript editor [OpenStreetMap](https://www.openstreetmap.org/)
 
 [![build](https://github.com/openstreetmap/iD/workflows/build/badge.svg)](https://github.com/openstreetmap/iD/actions?query=workflow%3A%22build%22)
 
-## New Features for MapMania
+## New Features for HOT Maps
 We've added a mandatory testing stage in the tutorial that all users must attempt before freely editing and modifying the existing map.
 * The stage consists of multiple mapping tasks such as house outlining and road tracing.
 * Using our custom metrics, we evaluate the accuracy of the user's shapes and lines against the ground-truth existing maps.
