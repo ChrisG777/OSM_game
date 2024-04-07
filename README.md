@@ -98,4 +98,5 @@ iD also bundles portions of the following open source software.
 ## Thank you
 
 MapMania was developed at the 2024 Stanford x MIT Impactathon as a project for the Humanitarian OpenStreetMap Team (HOT) by George Cao, Chris Ge, Alan Lee and Nilay Mishra.
+
 Initial development of iD was made possible by a [grant of the Knight Foundation](https://www.mapbox.com/blog/knight-invests-openstreetmap/).
