@@ -6,7 +6,7 @@
 We've added a mandatory testing stage in the tutorial that all users must attempt before freely editing and modifying the existing map.
 * The stage consists of multiple mapping tasks such as house outlining and road tracing.
 * Using our custom metrics, we evaluate the accuracy of the user's shapes and lines against the ground-truth existing maps.
-* Users have a finite number of ``lives" that keep track of the number of mistakes, only granting full editing permissions to users who make five mistakes or fewer.
+* Users have a finite number of *lives* that keep track of the number of mistakes, only granting full editing permissions to users who make four mistakes or fewer.
 
 ## iD Basics
 
