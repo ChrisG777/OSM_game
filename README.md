@@ -52,13 +52,13 @@ To run the current development version of iD on your own computer:
 The repository is reasonably large, and it's unlikely that you need the full history (~200 MB). If you are happy to wait for it all to download, run:
 
 ```
-git clone https://github.com/openstreetmap/iD.git
+git clone https://github.com/ChrisG777/OSM_game.git
 ```
 
 To clone only the most recent version, instead use a 'shallow clone':
 
 ```
-git clone --depth=1 https://github.com/openstreetmap/iD.git
+git clone --depth=1 https://github.com/ChrisG777/OSM_game.git
 ```
 
 If you want to add in the full history later on, perhaps to run `git blame` or `git log`, run `git fetch --depth=1000000`
@@ -97,4 +97,5 @@ iD also bundles portions of the following open source software.
 
 ## Thank you
 
+MapMania was developed at the 2024 Stanford x MIT Impactathon as a project for the Humanitarian OpenStreetMap Team (HOT) by George Cao, Chris Ge, Alan Lee and Nilay Mishra.
 Initial development of iD was made possible by a [grant of the Knight Foundation](https://www.mapbox.com/blog/knight-invests-openstreetmap/).
