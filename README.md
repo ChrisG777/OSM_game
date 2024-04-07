@@ -3,6 +3,14 @@
 [![build](https://github.com/openstreetmap/iD/workflows/build/badge.svg)](https://github.com/openstreetmap/iD/actions?query=workflow%3A%22build%22)
 
 ## New Features for HOT Maps
+
+<div align="center">
+  <h2> Video Demo </h2>
+  <a href="https://youtu.be/ENacIeLF61U">
+    <img src="https://img.youtube.com/vi/ENacIeLF61U/0.jpg" alt="HOT Maps Demo" width=800>
+  </a>
+</div>
+
 We've added a mandatory testing stage in the tutorial that all users must attempt before freely editing and modifying the existing map.
 * The stage consists of multiple mapping tasks such as house outlining and road tracing.
   * This stage can be found under modules/ui/intro/testYourself.js 
